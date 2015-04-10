@@ -89,26 +89,30 @@ public class MainActivity extends Activity {
 				        			if (!PlayerInfo.comPlay.canMove()) {
 				        				outputLog("GAME OVER: YOU WIN!!! COM CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
 				        			} else {
-				        				PositionInfo tmp = PlayerInfo.comPlay.calcNextMove(); // TODO move logic.
-				        			    PlayerInfo.comPlay.moveTo(tmp);
-				        			    outputLog("COM: move to " + tmp.toString(), LOG_LEVEL.SYS);
-				        			
-				        			    // COM shoot
-				        			    PositionInfo shootPos = PlayerInfo.comPlay.aim(); // TODO shoot logic.
-				        			    outputLog("COM Shoot : " + shootPos.toString(), LOG_LEVEL.SYS);
-				        			    if (PlayerInfo.comPlay.shoot(shootPos)) {
-				        				    outputLog("GAME OVER: YOU DIE!!! COM WIN!", LOG_LEVEL.IMPORTANT);
-				        			    } 
-				        			
-				        			    outputLog("Please User Move.", LOG_LEVEL.SYS);
-				        			    Toast.makeText(getApplicationContext(), "Please User Move ~", Toast.LENGTH_SHORT).show();
+				        				if (PlayerInfo.comPlay.canMove()) {
+					        				PositionInfo tmp = PlayerInfo.comPlay.calcNextMove(); // TODO move logic.
+					        			    PlayerInfo.comPlay.moveTo(tmp);
+					        			    outputLog("COM: move to " + tmp.toString(), LOG_LEVEL.SYS);
+					        			
+					        			    // COM shoot
+					        			    PositionInfo shootPos = PlayerInfo.comPlay.aim(); // TODO shoot logic.
+					        			    outputLog("COM Shoot : " + shootPos.toString(), LOG_LEVEL.SYS);
+					        			    if (PlayerInfo.comPlay.shoot(shootPos)) {
+					        				    outputLog("GAME OVER: YOU DIE!!! COM WIN!", LOG_LEVEL.IMPORTANT);
+					        			    } 
+					        			
+					        			    outputLog("Please User Move.", LOG_LEVEL.SYS);
+					        			    Toast.makeText(getApplicationContext(), "Please User Move ~", Toast.LENGTH_SHORT).show();
 
-				        			    // Enable User chess.
-				        			    MapInfo.setupPlayerField();
-				        			    
-				        			    if (!PlayerInfo.humPlay.canMove()) {
-				        			    	outputLog("GAME OVER: COM WIN!!! YOU CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
-				        			    }
+					        			    // Enable User chess.
+					        			    MapInfo.setupPlayerField();
+					        			    
+					        			    if (!PlayerInfo.humPlay.canMove()) {
+					        			    	outputLog("GAME OVER: COM WIN!!! YOU CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
+					        			    }
+				        				} else {
+				        					outputLog("GAME OVER: YOU WIN!!! COM CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
+				        				}
 				        			}
 				        		}
 			        			MapInfo.updateField(PLAYER_TYPE.COM, false);
@@ -126,8 +130,7 @@ public class MainActivity extends Activity {
 		}
 		
 		// 1. Set up User.
-		PlayerInfo.comPlay = new SnipperInfo(3, new PositionInfo(0, 0), "COM", PLAYER_TYPE.COM);
-		PlayerInfo.humPlay = new SnipperInfo(3, new PositionInfo(6, 2), "YOU", PLAYER_TYPE.HUM);
+		PlayerInfo.initPlayer();
 		
 		// User move/shoot first.
 		MapInfo.setupPlayerField();

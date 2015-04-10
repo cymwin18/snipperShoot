@@ -198,7 +198,9 @@ class SnipperInfo {
 		//
 		MapInfo.updateField(PLAYER_TYPE.HUM, false);
 		// 3. show me
-		showMe();
+		if (playerType == PLAYER_TYPE.HUM) {
+			showMe();
+		}
 	}
 	
 	public boolean shoot(PositionInfo _pos) {
@@ -347,7 +349,7 @@ class MapInfo {
 			}
 		}
 		if (userType == PLAYER_TYPE.COM){
-			PlayerInfo.comPlay.showMe();
+			// PlayerInfo.comPlay.showMe();
 		} else {
 			PlayerInfo.humPlay.showMe();
 		}
@@ -385,4 +387,10 @@ class MapInfo {
 class PlayerInfo {
 	public static SnipperInfo comPlay;
 	public static SnipperInfo humPlay;
+	
+    public static void initPlayer() {
+		Random r = new Random();
+		PlayerInfo.comPlay = new SnipperInfo(3, new PositionInfo(r.nextInt(4), r.nextInt(5)), "COM", PLAYER_TYPE.COM); // Random COM init pos.
+		PlayerInfo.humPlay = new SnipperInfo(3, new PositionInfo(6, 2), "YOU", PLAYER_TYPE.HUM); // User can choose where to born.
+    }
 }
