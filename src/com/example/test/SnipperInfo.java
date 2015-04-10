@@ -390,7 +390,7 @@ class PlayerInfo {
 	
     public static void initPlayer() {
 		Random r = new Random();
-		PlayerInfo.comPlay = new SnipperInfo(3, new PositionInfo(r.nextInt(4), r.nextInt(5)), "COM", PLAYER_TYPE.COM); // Random COM init pos.
+		PlayerInfo.comPlay = new SnipperInfo(3, new PositionInfo(r.nextInt(3), r.nextInt(5)), "COM", PLAYER_TYPE.COM); // Random COM init pos.
 		PlayerInfo.humPlay = new SnipperInfo(3, new PositionInfo(6, 2), "YOU", PLAYER_TYPE.HUM); // User can choose where to born.
     }
 }
