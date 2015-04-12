@@ -2,7 +2,18 @@
     android:orientation="vertical" 
     android:layout_width="fill_parent" 
     android:layout_height="fill_parent" 
-    android:layout_weight="1">  
+    android:layout_weight="1"
+    android:clickable="false">
+
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:background="#FFFFFF"
+        android:textColor="#DDEE00"
+        android:text="INFO"
+        android:textStyle="normal"
+        android:gravity="center"
+        android:id="@+id/info_text"/>
 
     <TableLayout
         android:id="@+id/maptable"
@@ -10,25 +21,33 @@
         android:layout_height="wrap_content"
         android:stretchColumns="*" >
 	</TableLayout>
+
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="RESTART"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/btn_restart" />
+    <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:background="#FFFFFF"
+        android:textColor="#FF0000"
+        android:text="Output Log:"
+        android:textStyle="normal"
+        android:id="@+id/outputlog"/>
+
 	<ScrollView     
-    android:layout_width="fill_parent"    
-    android:layout_height="fill_parent"    
-    android:scrollbars="vertical"    
-    android:fadingEdge="vertical">
-	<LinearLayout
-	    android:orientation="vertical"
-	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content" 
-	    android:id="@+id/outputlist">
-	    	    
-	    <TextView android:layout_width="fill_parent" 
-          android:layout_height="wrap_content"   
-          android:textSize="18sp" 
-          android:background="#FFFFFF" 
-          android:textColor="#FF0000" 
-          android:text="Output Log:" 
-          android:textStyle="normal" 
-          android:id="@+id/outputlog"/>
-	</LinearLayout>
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:scrollbars="vertical"
+        android:fadingEdge="vertical">
+	    <LinearLayout
+	        android:orientation="vertical"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:id="@+id/outputlist">
+	    </LinearLayout>
 	</ScrollView>
 </LinearLayout>  
