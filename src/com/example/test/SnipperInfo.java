@@ -134,11 +134,11 @@ class SnipperInfo {
 		if (playerType != PLAYER_TYPE.COM) {
 			return null;
 		}
-		PositionInfo comPi = PlayerInfo.comPlay.getPos();
-		Random r = new Random();
-		int n = r.nextInt(4);
+        PositionInfo comPi = PlayerInfo.comPlay.getPos();
+        Random r = new Random();
+        int n = r.nextInt(4);
 		Log.i("Yangming", "n:" + n + " POS: " + comPi.toString());
-		
+
 		PositionInfo ret = new PositionInfo(0, 0);
 		if (n == 0) { // left
 			if (comPi.getY() == 0) {
@@ -196,7 +196,7 @@ class SnipperInfo {
 		// 2. move to new place.
 		setPos(_pos);
 		//
-		MapInfo.updateField(PLAYER_TYPE.HUM, false);
+		MapInfo.updateField(PLAYER_TYPE.HUM, false, true);
 		// 3. show me
 		if (playerType == PLAYER_TYPE.HUM) {
 			showMe();
@@ -215,7 +215,8 @@ class SnipperInfo {
 		// Disable the shot field.
 		MapInfo.battleMap[_pos.getX()][_pos.getY()].setEnabled(false);
 		MapInfo.battleMap[_pos.getX()][_pos.getY()].setText("X");
-		MapInfo.battleMap[_pos.getX()][_pos.getY()].setShoot(true);
+		MapInfo.battleMap[_pos.getX()][_pos.getY()].setShoot(5); // Normal bullet will last 3 round.
+
 		return false;
 	}
 
@@ -249,6 +250,7 @@ class FieldInfo extends Button {
 		this.setText(getTextFromPos(pos));
 		this.setTextColor(getColorFromPos(pos));
 	}
+    private int mShotEffect = 0;
 
 	public FIELD_TYPE getType() {
 		return type;
@@ -266,12 +268,16 @@ class FieldInfo extends Button {
 		this.pos = pos;
 	}
 
-	public void resetField(PositionInfo _pos) {
-		this.setText(getTextFromPos(_pos));
-		this.setTextColor(getColorFromPos(_pos));
+	public void resetField() {
+        if (isShoot()) {
+            setEnabled(false);
+        }
+
+		this.setText(getTextFromPos(pos));
+		this.setTextColor(getColorFromPos(pos));
 	}
 
-	public static String getTextFromPos(int _x, int _y) {
+	public String getTextFromPos(int _x, int _y) {
 		String ret = " ";
 		switch (MapInfo.map[_x][_y]) {
 		case 0:
@@ -284,10 +290,15 @@ class FieldInfo extends Button {
 			ret = "#";
 			break;
 		}
+
+        if (mShotEffect != 0) {
+            ret = "" + mShotEffect;
+        }
+
 		return ret;
 	}
 
-	public static String getTextFromPos(PositionInfo pi) {
+	public String getTextFromPos(PositionInfo pi) {
 		return getTextFromPos(pi.X, pi.Y);
 	}
 
@@ -309,47 +320,69 @@ class FieldInfo extends Button {
 
 	FIELD_TYPE type;
 	PositionInfo pos;
-	boolean isShoot = false;
+
 	
 	public boolean isShoot() {
-		return isShoot;
+        return (mShotEffect != 0);
+    }
+
+	public void setShoot(int shotEffect) {
+		this.mShotEffect = shotEffect;
 	}
 
-	public void setShoot(boolean isShoot) {
-		this.isShoot = isShoot;
-	}
+    public void reduceShotEffect() {
+        if (mShotEffect != 0) {
+            this.mShotEffect--;
+        }
+    }
 }
 
 class MapInfo {
-	static int[][] map = new int[][] { { 0, 0, 0, 0, 0 }, { 2, 0, 0, 0, 2 },
-			{ 0, 0, 2, 0, 0 }, { -1, -1, -1, -1, -1 }, { 0, 0, 2, 0, 0 },
-			{ 2, 0, 0, 0, 2 }, { 0, 0, 0, 0, 0 } };
+	static int[][] map = new int[]        [] { { 0, 0, 0, 0, 0 }, { 2, 0, 0, 0, 2 },
+            { 0, 0, 2, 0, 0 }, { -1, -1, -1, -1, -1 }, { 0, 0, 2, 0, 0 },
+            { 2, 0, 0, 0, 2 }, { 0, 0, 0, 0, 0 } };
 
-	static FieldInfo[][] battleMap = new FieldInfo[map.length][map[0].length];
+        static FieldInfo[][] battleMap = new FieldInfo[map.length][map[0].length];
 
-	void init() {
-	}
+    void init() {
+    }
 
-	static void refreshPosition(PositionInfo pi) {
-		battleMap[pi.X][pi.Y].resetField(pi);
-	}
+    static void lockDownMap() {
+        // TODO fix it.
+        /*
+        for (int i = 0; i < battleMap.length; i++) {
+            for (int j = 0; j < battleMap[i].length; j++) {
+                battleMap[i][j].setEnabled(false);
+            }
+        }*/
+    }
 
-	static void updateField(PLAYER_TYPE userType, boolean enabled) {
-		int start = 0, end = battleMap.length;
-		if (userType == PLAYER_TYPE.COM) { // COM
-			end = (end - start) / 2;
-		} else {
-			start = (end - start) / 2;
-		}
+    static void refreshPosition(PositionInfo pi) {
+        battleMap[pi.X][pi.Y].resetField();
+    }
+
+    static void updateField(PLAYER_TYPE userType, boolean enabled, boolean updateShotEffect) {
+        int start = 0, end = battleMap.length;
+        if (userType == PLAYER_TYPE.COM) { // COM
+            end = (end - start) / 2;
+        } else {
+            start = (end - start) / 2;
+        }
 
 		for (int i = start; i < end; i++) {
 			for (int j = 0; j < battleMap[i].length; j++) {
-				battleMap[i][j].setEnabled(enabled);
+                if (updateShotEffect) {
+                    battleMap[i][j].reduceShotEffect();
+                }
+
+                battleMap[i][j].resetField();
+                battleMap[i][j].setEnabled(enabled);
 				// battleMap[i][j].setBackgroundColor(Color.parseColor("#CCCCCC"));
 			}
 		}
 		if (userType == PLAYER_TYPE.COM){
 			// PlayerInfo.comPlay.showMe();
+            ;
 		} else {
 			PlayerInfo.humPlay.showMe();
 		}
@@ -358,7 +391,7 @@ class MapInfo {
 	static void setupPlayerField() {
 		// Disable HUM field, enable COM field.
 		// updateField(PLAYER_TYPE.COM, true);
-		updateField(PLAYER_TYPE.HUM, false);
+		updateField(PLAYER_TYPE.HUM, false, false);
 
 		// Enable buttons where user can go.
 		int x = PlayerInfo.humPlay.pos.X;
@@ -369,6 +402,8 @@ class MapInfo {
 			battleMap[x + 1][y].setEnabled(true);
 			// battleMap[x+1][y].setBackgroundColor(Color.parseColor("blue"));
 		}
+
+
 		if (x > 1 && x - 1 > (map.length / 2) && !battleMap[x - 1][y].isShoot()) {
 			battleMap[x - 1][y].setEnabled(true);
 			// battleMap[x-1][y].setBackgroundColor(Color.parseColor("blue"));

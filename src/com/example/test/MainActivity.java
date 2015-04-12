@@ -50,6 +50,11 @@ public class MainActivity extends Activity {
         }
 	}
 
+    private void resetLog() {
+        LinearLayout outList = (LinearLayout) findViewById(R.id.outputlist);
+        outList.removeAllViews();
+    }
+
     private void initGameMap() {
         TableLayout table = (TableLayout) findViewById(R.id.maptable);
         table.setStretchAllColumns(true);
@@ -76,7 +81,7 @@ public class MainActivity extends Activity {
                                     outputLog("User move to " + fi.getPos().toString(), LOG_LEVEL.USER);
                                     // After user move, enable the shoot field.
                                     //Toast.makeText(getApplicationContext(), "Please User Shoot ~", Toast.LENGTH_SHORT).show();
-                                    MapInfo.updateField(PLAYER_TYPE.COM, true);
+                                    MapInfo.updateField(PLAYER_TYPE.COM, true, false);
                                     outputLog("Please User Shoot ~~", LOG_LEVEL.SYS);
                                 } else {
                                     outputLog("User Shoot " + fi.getPos().toString(), LOG_LEVEL.USER);
@@ -84,11 +89,13 @@ public class MainActivity extends Activity {
                                         PlayerInfo.comPlay.setAlive(false);
                                         //Toast.makeText(getApplicationContext(), "COM DIED ~_~", Toast.LENGTH_SHORT).show();
                                         outputLog("GAME OVER: YOU WIN!!! COM DIED!", LOG_LEVEL.IMPORTANT);
+                                        MapInfo.updateField(PLAYER_TYPE.COM, false, false);
                                         gameOver();
                                     } else {
                                         outputLog("COM still Alive.", LOG_LEVEL.SYS);
 
                                         // COM move
+                                        MapInfo.updateField(PLAYER_TYPE.COM, false, true);
                                         Toast.makeText(getApplicationContext(), "COM play time ~", Toast.LENGTH_SHORT).show();
                                         if (!PlayerInfo.comPlay.canMove()) {
                                             outputLog("GAME OVER: YOU WIN!!! COM CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
@@ -122,7 +129,6 @@ public class MainActivity extends Activity {
                                             gameOver();
                                         }
                                     }
-                                    MapInfo.updateField(PLAYER_TYPE.COM, false);
                                 }
                             }
                         });
@@ -147,7 +153,9 @@ public class MainActivity extends Activity {
         // User move/shoot first.
         MapInfo.setupPlayerField();
         // COM field disabled.
-        MapInfo.updateField(PLAYER_TYPE.COM, false);
+        MapInfo.updateField(PLAYER_TYPE.COM, false, false);
+
+        resetLog();
 
         outputLog("Game Start!!", LOG_LEVEL.SYS);
     }
