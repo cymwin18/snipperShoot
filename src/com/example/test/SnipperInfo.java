@@ -177,7 +177,14 @@ class SnipperInfo {
 
 	public PositionInfo aim() {
 		Random r = new Random();
-		PositionInfo ret = new PositionInfo(r.nextInt(3) + 4, r.nextInt(5));
+        int y = pos.getY() - 1 + r.nextInt(3);
+        if (y < 0) {
+            y = 0;
+        }
+        if (y >= MapInfo.battleMap[0].length) {
+            y = MapInfo.battleMap[0].length - 1;
+        }
+		PositionInfo ret = new PositionInfo(r.nextInt(3) + 4, y);
 		
 		if (MapInfo.battleMap[ret.getX()][ret.getY()].isShoot()) {
 			return aim();
@@ -338,7 +345,7 @@ class FieldInfo extends Button {
 }
 
 class MapInfo {
-	static int[][] map = new int[]        [] { { 0, 0, 0, 0, 0 }, { 2, 0, 0, 0, 2 },
+	static int[][] map = new int[][] { { 0, 0, 0, 0, 0 }, { 2, 0, 0, 0, 2 },
             { 0, 0, 2, 0, 0 }, { -1, -1, -1, -1, -1 }, { 0, 0, 2, 0, 0 },
             { 2, 0, 0, 0, 2 }, { 0, 0, 0, 0, 0 } };
 
@@ -377,6 +384,12 @@ class MapInfo {
 
                 battleMap[i][j].resetField();
                 battleMap[i][j].setEnabled(enabled);
+
+                if (enabled == true) {
+                    if (Math.abs(j - PlayerInfo.humPlay.getPos().getY()) > 1) {
+                        battleMap[i][j].setEnabled(false);
+                    }
+                }
 				// battleMap[i][j].setBackgroundColor(Color.parseColor("#CCCCCC"));
 			}
 		}
@@ -390,7 +403,6 @@ class MapInfo {
 
 	static void setupPlayerField() {
 		// Disable HUM field, enable COM field.
-		// updateField(PLAYER_TYPE.COM, true);
 		updateField(PLAYER_TYPE.HUM, false, false);
 
 		// Enable buttons where user can go.
