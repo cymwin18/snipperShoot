@@ -397,13 +397,11 @@ class MapInfo {
     }
 
     static void lockDownMap() {
-        // TODO fix it.
-        /*
         for (int i = 0; i < battleMap.length; i++) {
             for (int j = 0; j < battleMap[i].length; j++) {
                 battleMap[i][j].setEnabled(false);
             }
-        }*/
+        }
     }
 
     static void refreshPosition(PositionInfo pi) {

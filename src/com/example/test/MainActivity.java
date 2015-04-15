@@ -50,6 +50,8 @@ public class MainActivity extends Activity {
         if (level == LOG_LEVEL.SYS || level == LOG_LEVEL.IMPORTANT) {
             if (level == LOG_LEVEL.IMPORTANT) {
                 infoText.setTextColor(color);
+            } else {
+                infoText.setTextColor(Color.parseColor("#DDEE00"));
             }
             infoText.setText(msg);
         }
@@ -98,6 +100,7 @@ public class MainActivity extends Activity {
                                             outputLog("GAME OVER: PLAYER 1 WIN!!! PLAYER 0 DIED!", LOG_LEVEL.IMPORTANT);
                                             MapInfo.updateField(mPlayTurn, false);
                                             gameOver();
+                                            return;
                                         } else {
                                             MapInfo.updateField(mPlayTurn, false);
                                         }
@@ -112,6 +115,7 @@ public class MainActivity extends Activity {
                                             outputLog("GAME OVER: YOU WIN!!! COM DIED!", LOG_LEVEL.IMPORTANT);
                                             MapInfo.updateField(mPlayTurn, false);
                                             gameOver();
+                                            return;
                                         } else {
                                             outputLog("PLAYER 2 still Alive.", LOG_LEVEL.SYS);
                                             MapInfo.updateField(mPlayTurn, false);
@@ -152,12 +156,18 @@ public class MainActivity extends Activity {
         resetLog();
 
         outputLog("Game Start!!", LOG_LEVEL.SYS);
+
+        Button btnDone = (Button) findViewById(R.id.btn_done);
+        btnDone.setEnabled(true);
     }
 
     private void gameOver() {
         Button btnRestart = (Button) findViewById(R.id.btn_restart);
         MapInfo.lockDownMap();
         btnRestart.setEnabled(true);
+
+        Button btnDone = (Button) findViewById(R.id.btn_done);
+        btnDone.setEnabled(false);
     }
 	
 	@Override
@@ -202,6 +212,7 @@ public class MainActivity extends Activity {
                     if (!PlayerInfo.player_1.canMove()) {
                         outputLog("GAME OVER: YOU WIN!!! COM CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
                         gameOver();
+                        return;
                     } else if (PlayerInfo.player_1.canMove()) {
                         PositionInfo tmp = PlayerInfo.player_1.calcNextMove(); // TODO move logic.
                         PlayerInfo.player_1.moveTo(tmp);
@@ -213,6 +224,7 @@ public class MainActivity extends Activity {
                         if (PlayerInfo.player_1.shoot(shootPos)) {
                             outputLog("GAME OVER: YOU DIE!!! COM WIN!", LOG_LEVEL.IMPORTANT);
                             gameOver();
+                            return;
                         }
 
                         outputLog("Please User Move.", LOG_LEVEL.SYS);
@@ -222,13 +234,15 @@ public class MainActivity extends Activity {
                         if (!PlayerInfo.player_0.canMove()) {
                             outputLog("GAME OVER: COM WIN!!! YOU CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
                             gameOver();
+                            return;
                         }
 
                     } else {
                         outputLog("GAME OVER: YOU WIN!!! COM CAN'T MOVE!", LOG_LEVEL.IMPORTANT);
                         gameOver();
+                        return;
                     }
-
+                    MapInfo.updateField(mPlayTurn, true);
                     mPlayTurn = PLAYER_TURN.PLAYER_0;
                 }
 
