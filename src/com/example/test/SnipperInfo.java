@@ -1,8 +1,6 @@
 package com.example.test;
 
-import android.content.Context;
 import android.util.Log;
-import android.widget.Button;
 import android.graphics.Color;
 import java.util.*;
 
@@ -15,11 +13,7 @@ enum PLAYER_TURN {
     PLAYER_1  // User up
 }
 
-enum FIELD_TYPE {
-	NORMAL, BULLET, WATER
-}
-
-enum PLAY_TYPE {
+enum VS_MODE {
     COMVSHUM,
     HUMVSHUM
 }
@@ -236,8 +230,8 @@ class PlayerInfo {
 	public static SnipperInfo player_0; // DOWN
     public static SnipperInfo player_1; // UP
 
-    public static void initPlayer(PLAY_TYPE type) {
-        if (type == PLAY_TYPE.COMVSHUM) {
+    public static void initPlayer(VS_MODE type) {
+        if (type == VS_MODE.COMVSHUM) {
             Random r = new Random();
             PlayerInfo.player_1 = new SnipperInfo(3, new PositionInfo(r.nextInt(3), r.nextInt(5)), "COM", PLAYER_TYPE.COM); // Random COM init pos.
         } else {

@@ -7,6 +7,11 @@ import android.widget.Button;
 /**
  * Created by Yangming on 2015/4/16.
  */
+
+enum FIELD_TYPE {
+    NORMAL, BULLET, WATER
+}
+
 class PositionInfo {
     public PositionInfo(int x, int y) {
         super();
@@ -297,6 +302,21 @@ public class MapInfo {
         if (y - 1 >= 0 && !battleMap[x][y - 1].isShoot()) {
             battleMap[x][y - 1].setEnabled(true);
             // battleMap[x][y-1].setBackgroundColor(Color.parseColor("blue"));
+        }
+    }
+
+    static void setEnableMap(PLAYER_TYPE player_type, boolean enabled) {
+        int start = 0, end = battleMap.length, mid = (end - start) / 2;
+        if (player_type == PLAYER_TYPE.COM) { // COM
+            end = (end - start) / 2;
+        } else {
+            start = (end - start) / 2 + 1;
+        }
+
+        for (int i = start; i < end; i++) {
+            for (int j = 0; j < battleMap[0].length; j++) {
+                battleMap[i][j].setEnabled(enabled);
+            }
         }
     }
 }

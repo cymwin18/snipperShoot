@@ -14,6 +14,12 @@ import android.widget.TableRow;
 import android.widget.Toast;
 import android.graphics.Color;
 
+enum GAME_STAGE {
+    INIT,
+    BEGIN,
+    END
+}
+
 public class MainActivity extends Activity {
 	public enum LOG_LEVEL {
 		USER,
@@ -21,10 +27,16 @@ public class MainActivity extends Activity {
 		IMPORTANT
 	}
 
+    private GAME_STAGE game_stage = GAME_STAGE.INIT;
 
-    private static PLAY_TYPE mPlayType = PLAY_TYPE.COMVSHUM;
+    private static VS_MODE mVsMode = VS_MODE.COMVSHUM;
 
     private PLAYER_TURN mPlayTurn =  PLAYER_TURN.PLAYER_0;
+
+    private void setDoneBtnEnabled(boolean enabled) {
+        final Button btnDone = (Button) findViewById(R.id.btn_done);
+        btnDone.setEnabled(enabled);
+    }
 
 	private void outputLog(String msg, LOG_LEVEL level) {
         LinearLayout outList = (LinearLayout) findViewById(R.id.outputlist);
@@ -82,7 +94,33 @@ public class MainActivity extends Activity {
                         MapInfo.battleMap[i][j].setOnClickListener(new View.OnClickListener() {
                             public void onClick(View v) {
                                 FieldInfo fi = (FieldInfo) v;
-                                if (fi.getPos().X > (MapInfo.battleMap.length / 2)) {
+
+                                if (game_stage == GAME_STAGE.INIT) {
+                                    if (mVsMode == VS_MODE.COMVSHUM) {
+                                        PlayerInfo.player_0.setPos(fi.getPos());
+                                        MapInfo.updateField(PLAYER_TURN.PLAYER_0, false);
+                                        game_stage = GAME_STAGE.BEGIN;
+                                        return;
+                                    } else if (mVsMode == VS_MODE.HUMVSHUM) {
+                                        // Set Player location.
+                                        if (fi.getPos().getX()  > (MapInfo.battleMap.length / 2)) {
+                                            // Set Player 0.
+                                            PlayerInfo.player_0.setPos(fi.getPos());
+                                            MapInfo.setEnableMap(PLAYER_TYPE.HUM, false);
+                                            MapInfo.setEnableMap(PLAYER_TYPE.COM, true);
+                                            return;
+                                        } else {
+                                            // Set Player 1.
+                                            PlayerInfo.player_1.setPos(fi.getPos());
+                                            MapInfo.updateField(PLAYER_TURN.PLAYER_0, false);
+                                            game_stage = GAME_STAGE.BEGIN;
+                                            return;
+                                        }
+                                    }
+                                    return;
+                                }
+
+                                if (fi.getPos().getX() > (MapInfo.battleMap.length / 2)) {
                                     if (mPlayTurn == PLAYER_TURN.PLAYER_0) {
                                         // 1. hum player 0 move.
                                         PlayerInfo.player_0.moveTo(fi.getPos());
@@ -102,10 +140,10 @@ public class MainActivity extends Activity {
                                             gameOver();
                                             return;
                                         } else {
+                                            setDoneBtnEnabled(true);
                                             MapInfo.updateField(mPlayTurn, false);
                                         }
                                     }
-
                                 } else {
                                     if (mPlayTurn == PLAYER_TURN.PLAYER_0) {
                                         outputLog("User Shoot " + fi.getPos().toString(), LOG_LEVEL.USER);
@@ -118,6 +156,7 @@ public class MainActivity extends Activity {
                                             return;
                                         } else {
                                             outputLog("PLAYER 2 still Alive.", LOG_LEVEL.SYS);
+                                            setDoneBtnEnabled(true);
                                             MapInfo.updateField(mPlayTurn, false);
                                         }
                                     }
@@ -142,23 +181,29 @@ public class MainActivity extends Activity {
     }
 
     private void gameStart() {
+        game_stage = GAME_STAGE.INIT;
+
         // init map.
         initGameMap();
 
         mPlayTurn =  PLAYER_TURN.PLAYER_0;
 
+        // User choose player location.
+        outputLog("Please choose Player 0 location.", LOG_LEVEL.IMPORTANT);
+        MapInfo.setEnableMap(PLAYER_TYPE.HUM, true);
+        MapInfo.setEnableMap(PLAYER_TYPE.COM, false);
+
         // Set up User.
-        PlayerInfo.initPlayer(mPlayType);
+        PlayerInfo.initPlayer(mVsMode);
 
         // COM field disabled.
-        MapInfo.updateField(PLAYER_TURN.PLAYER_0, false);
+        // MapInfo.updateField(PLAYER_TURN.PLAYER_0, false);
 
         resetLog();
 
         outputLog("Game Start!!", LOG_LEVEL.SYS);
 
-        Button btnDone = (Button) findViewById(R.id.btn_done);
-        btnDone.setEnabled(true);
+        setDoneBtnEnabled(false);
     }
 
     private void gameOver() {
@@ -166,8 +211,7 @@ public class MainActivity extends Activity {
         MapInfo.lockDownMap();
         btnRestart.setEnabled(true);
 
-        Button btnDone = (Button) findViewById(R.id.btn_done);
-        btnDone.setEnabled(false);
+        setDoneBtnEnabled(false);
     }
 	
 	@Override
@@ -190,9 +234,12 @@ public class MainActivity extends Activity {
         });
 
         final Button btnDone = (Button) findViewById(R.id.btn_done);
-        btnDone.setEnabled(true);
+        // Done btn init disabled. It will be enabled after user shoot.
+        btnDone.setEnabled(false);
         btnDone.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // Disable btn and this button will be enabled after user shoot.
+                btnDone.setEnabled(false);
                 if (mPlayTurn == PLAYER_TURN.PLAYER_0) {
                     PlayerInfo.player_0.setMoveDone(false);
                     PlayerInfo.player_0.setShootDone(false);
@@ -204,7 +251,7 @@ public class MainActivity extends Activity {
                 }
 
 
-                if (mPlayType == PLAY_TYPE.COMVSHUM) {
+                if (mVsMode == VS_MODE.COMVSHUM) {
                     outputLog("COM still Alive.", LOG_LEVEL.SYS);
 
                     // COM move
@@ -254,8 +301,8 @@ public class MainActivity extends Activity {
         btn_vsmode.setEnabled(true);
         btn_vsmode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                mPlayType = (mPlayType == PLAY_TYPE.COMVSHUM) ? PLAY_TYPE.HUMVSHUM : PLAY_TYPE.COMVSHUM;
-                String text = (mPlayType != PLAY_TYPE.COMVSHUM) ? "Num VS Hum" : "Com VS HUM";
+                mVsMode = (mVsMode == VS_MODE.COMVSHUM) ? VS_MODE.HUMVSHUM : VS_MODE.COMVSHUM;
+                String text = (mVsMode != VS_MODE.COMVSHUM) ? "Num VS Hum" : "Com VS HUM";
                 btn_vsmode.setText(text);
 
                 gameStart();
