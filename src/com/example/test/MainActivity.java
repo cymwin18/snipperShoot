@@ -1,7 +1,9 @@
 package com.example.test;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.Window; 
 import android.view.WindowManager;
@@ -222,6 +224,14 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_main);
 
+        Intent intent = getIntent();
+        String vsMode_str = intent.getStringExtra("VSMODE");
+        if (vsMode_str.equals("HUMVSCOM")) {
+            mVsMode = VS_MODE.COMVSHUM;
+        } else {
+            mVsMode = VS_MODE.HUMVSHUM;
+        }
+
         final Button btnRestart = (Button) findViewById(R.id.btn_restart);
         // This button should ,
         // be disabled first.
@@ -297,6 +307,7 @@ public class MainActivity extends Activity {
             }
         });
 
+        /*
         final Button btn_vsmode = (Button) findViewById(R.id.btn_vsmode);
         btn_vsmode.setEnabled(true);
         btn_vsmode.setOnClickListener(new View.OnClickListener() {
@@ -308,7 +319,7 @@ public class MainActivity extends Activity {
                 gameStart();
             }
         });
-
+        */
         gameStart();
 	}
 	
