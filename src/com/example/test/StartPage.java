@@ -48,6 +48,8 @@ public class StartPage extends Activity {
             public void onClick(View v) {
                 btnVsCom.setChecked(true);
                 btnVsHum.setChecked(false);
+                ipAddr_et.setVisibility(View.INVISIBLE);
+
             }
         });
 
