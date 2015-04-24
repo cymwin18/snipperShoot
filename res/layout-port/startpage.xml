@@ -1,26 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:textAlignment="center">
 
-    <!--<LinearLayout-->
-        <!--android:orientation="horizontal"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="center">-->
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Play VS COM"-->
-        <!--android:id="@+id/vsCom_btn" />-->
-
-    <!--<Button-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="Play VS HUM"-->
-        <!--android:id="@+id/vsHum_btn" />-->
-    <!--</LinearLayout>-->
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -38,15 +21,35 @@
         android:text="Play VS HUM"
         android:id="@+id/vsHum_btn" />
     </LinearLayout>
-
-    <EditText
+    <Spinner
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/ipAddr_et" />
+        android:id="@+id/spinner_connMode"
+        android:layout_gravity="center_horizontal"
+        android:spinnerMode="dropdown" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="IP:"
+            android:id="@+id/ip_textview"
+            android:layout_gravity="center_horizontal" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:id="@+id/ipAddr_et" />
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Start Game"
+        android:text="Start"
         android:id="@+id/Start_btn" />
+
 </LinearLayout>

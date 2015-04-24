@@ -3,12 +3,17 @@ package com.example.test;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.example.test.MainActivity;
 import com.example.test.R;
@@ -19,16 +24,21 @@ import java.net.UnknownHostException;
  * Created by cymwin18 on 4/22/15.
  */
 public class StartPage extends Activity {
-    void sendVsMode(String vsMode) {
+
+    public static String ipAddr_local = null;
+
+    public static VS_MODE vsMode = VS_MODE.COMVSHUM;
+
+    public static final String[] connMode = {"Create New Game","Connect to Game"};
+
+    void sendVsMode(VS_MODE vsMode) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("VSMODE", vsMode);
+        intent.putExtra("VSMODE", vsMode == VS_MODE.HUMVSHUM ? 1 : 0);
         startActivity(intent);
     }
 
-    // TODO: for Hum vs hum mode, need to create a socket server.
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -40,7 +50,33 @@ public class StartPage extends Activity {
         final RadioButton btnVsHum = (RadioButton) findViewById(R.id.vsHum_btn);
 
         final EditText ipAddr_et = (EditText) findViewById(R.id.ipAddr_et);
-        ipAddr_et.setVisibility(View.INVISIBLE);
+        final TextView ip_tv = (TextView) findViewById(R.id.ip_textview);
+
+        final Spinner connMode_spin = (Spinner) findViewById(R.id.spinner_connMode);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,connMode);
+        connMode_spin.setAdapter(adapter);
+
+        connMode_spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
+                if (i == 0) {
+                    // Create new game.
+                    if (ipAddr_local == null) {
+                        ipAddr_local = Utils.getWIFILocalIpAdress(getApplicationContext());
+                    }
+                    ipAddr_et.setText(ipAddr_local);
+                } else {
+                    ipAddr_et.setText("");
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> arg0) {
+            }
+        });
+
+
+        ipAddr_et.setVisibility(View.GONE);
+        ip_tv.setVisibility(View.GONE);
+        connMode_spin.setVisibility(View.GONE);
 
         btnVsCom.setChecked(true);
 
@@ -48,8 +84,11 @@ public class StartPage extends Activity {
             public void onClick(View v) {
                 btnVsCom.setChecked(true);
                 btnVsHum.setChecked(false);
-                ipAddr_et.setVisibility(View.INVISIBLE);
+                ipAddr_et.setVisibility(View.GONE);
+                ip_tv.setVisibility(View.GONE);
+                connMode_spin.setVisibility(View.GONE);
 
+                vsMode = VS_MODE.COMVSHUM;
             }
         });
 
@@ -59,22 +98,28 @@ public class StartPage extends Activity {
                 btnVsHum.setChecked(true);
 
                 java.net.InetAddress test = null;
-                String ipAddr = Utils.getWIFILocalIpAdress(getApplicationContext());
-                ipAddr_et.setText(ipAddr);
+                if (ipAddr_local == null) {
+                    ipAddr_local = Utils.getWIFILocalIpAdress(getApplicationContext());
+                }
+
+                ipAddr_et.setText(ipAddr_local);
                 ipAddr_et.setVisibility(View.VISIBLE);
+                ipAddr_et.setVisibility(View.VISIBLE);
+                ip_tv.setVisibility(View.VISIBLE);
+                connMode_spin.setVisibility(View.VISIBLE);
+
+                vsMode = VS_MODE.HUMVSHUM;
             }
         });
 
         Button btnStart = (Button) findViewById(R.id.Start_btn);
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                if (btnVsCom.isChecked()) {
-                    sendVsMode("HUMVSCOM");
-                } else {
-                    sendVsMode("HUMVSHUM");
-                }
+                Log.i("Yangming", "mode is " + vsMode);
+                sendVsMode(vsMode);
             }
         });
     }
 }
+
 

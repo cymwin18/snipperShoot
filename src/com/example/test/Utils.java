@@ -10,9 +10,9 @@ import android.net.wifi.WifiManager;
 public class Utils {
     public static String getWIFILocalIpAdress(Context mContext) {
 
-        //获取wifi服务
+        //get Wifi manager service.
         WifiManager wifiManager = (WifiManager)mContext.getSystemService(Context.WIFI_SERVICE);
-        //判断wifi是否开启
+        // Check if wifi is enabled.
         if (!wifiManager.isWifiEnabled()) {
             wifiManager.setWifiEnabled(true);
         }

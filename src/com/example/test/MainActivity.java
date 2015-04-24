@@ -225,12 +225,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
         Intent intent = getIntent();
-        String vsMode_str = intent.getStringExtra("VSMODE");
-        if (vsMode_str.equals("HUMVSCOM")) {
-            mVsMode = VS_MODE.COMVSHUM;
-        } else {
-            mVsMode = VS_MODE.HUMVSHUM;
-        }
+        mVsMode = intent.getIntExtra("VSMODE", 0) == 0 ? VS_MODE.COMVSHUM : VS_MODE.HUMVSHUM;
 
         final Button btnRestart = (Button) findViewById(R.id.btn_restart);
         // This button should ,
