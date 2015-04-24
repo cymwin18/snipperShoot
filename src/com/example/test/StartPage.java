@@ -23,6 +23,7 @@ import java.net.UnknownHostException;
 /**
  * Created by cymwin18 on 4/22/15.
  */
+
 public class StartPage extends Activity {
 
     public static String ipAddr_local = null;
@@ -36,6 +37,13 @@ public class StartPage extends Activity {
         intent.putExtra("VSMODE", vsMode == VS_MODE.HUMVSHUM ? 1 : 0);
         startActivity(intent);
     }
+
+    enum GAME_TYPE {
+        SERVER,
+        CLIENT
+    }
+
+    GAME_TYPE mGameType = GAME_TYPE.SERVER;
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -53,19 +61,24 @@ public class StartPage extends Activity {
         final TextView ip_tv = (TextView) findViewById(R.id.ip_textview);
 
         final Spinner connMode_spin = (Spinner) findViewById(R.id.spinner_connMode);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,connMode);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_dropdown_item,connMode);
         connMode_spin.setAdapter(adapter);
 
         connMode_spin.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             public void onItemSelected(AdapterView<?> arg0, View view, int i, long l) {
                 if (i == 0) {
                     // Create new game.
+                    mGameType = GAME_TYPE.SERVER;
                     if (ipAddr_local == null) {
                         ipAddr_local = Utils.getWIFILocalIpAdress(getApplicationContext());
                     }
                     ipAddr_et.setText(ipAddr_local);
+                    ipAddr_et.setEnabled(false);
                 } else {
+                    // Join an existed game.
                     ipAddr_et.setText("");
+                    ipAddr_et.setEnabled(true);
+                    mGameType = GAME_TYPE.CLIENT;
                 }
             }
 
@@ -73,13 +86,13 @@ public class StartPage extends Activity {
             }
         });
 
-
         ipAddr_et.setVisibility(View.GONE);
         ip_tv.setVisibility(View.GONE);
         connMode_spin.setVisibility(View.GONE);
 
         btnVsCom.setChecked(true);
 
+        // PLAY VS COM
         btnVsCom.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 btnVsCom.setChecked(true);
@@ -92,6 +105,7 @@ public class StartPage extends Activity {
             }
         });
 
+        // PLAY VS HUM
         btnVsHum.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 btnVsCom.setChecked(false);
@@ -104,7 +118,6 @@ public class StartPage extends Activity {
 
                 ipAddr_et.setText(ipAddr_local);
                 ipAddr_et.setVisibility(View.VISIBLE);
-                ipAddr_et.setVisibility(View.VISIBLE);
                 ip_tv.setVisibility(View.VISIBLE);
                 connMode_spin.setVisibility(View.VISIBLE);
 
@@ -116,6 +129,13 @@ public class StartPage extends Activity {
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 Log.i("Yangming", "mode is " + vsMode);
+                if (vsMode == VS_MODE.HUMVSHUM) {
+                    if (mGameType == GAME_TYPE.SERVER) {
+                        // TODO: Create the socket server.
+                    } else {
+                        // TODO: Join an exist server.
+                    }
+                }
                 sendVsMode(vsMode);
             }
         });

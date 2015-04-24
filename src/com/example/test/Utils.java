@@ -7,6 +7,12 @@ import android.net.wifi.WifiManager;
 /**
  * Created by cymwin18 on 4/24/15.
  */
+
+enum VS_MODE {
+    COMVSHUM,
+    HUMVSHUM
+}
+
 public class Utils {
     public static String getWIFILocalIpAdress(Context mContext) {
 

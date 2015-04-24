@@ -13,11 +13,6 @@ enum PLAYER_TURN {
     PLAYER_1  // User up
 }
 
-enum VS_MODE {
-    COMVSHUM,
-    HUMVSHUM
-}
-
 class SnipperInfo {
 	public SnipperInfo(int bulletNum, PositionInfo pos, String name,
 			PLAYER_TYPE _playerType) {
