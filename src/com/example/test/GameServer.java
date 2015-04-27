@@ -12,21 +12,32 @@ import android.util.Log;
 import android.widget.Toast;
 import android.os.Process;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
 import java.util.Objects;
 
+import java.net.ServerSocket;
+import java.net.Socket;
+
 /**
  * Created by cymwin18 on 4/24/15.
  */
 interface IGameServer {
-    public int sendRequest(Object req);
-    public Object recvResponse();
+    public int sendRequest(String req);
+    public String recvResponse();
     public String getIpAddr();
+    public void startSocketServer(String ipAddr);
+    public void connSocketServer(String ipAddr);
 }
 
 public class GameServer extends Service {
+
+    private Socket mSocket = null;
+
     @Override
     public IBinder onBind(Intent args) {
         return new GameBinder();
@@ -94,12 +105,46 @@ public class GameServer extends Service {
     }
 
     private class GameBinder extends Binder implements  IGameServer{
-        public int sendRequest(Object req) {
+        public int sendRequest(String req) {
+            if (mSocket == null) {
+                return -1;
+            }
+
+            try {
+                OutputStream outputStream = mSocket.getOutputStream();
+                int i = 0;
+                byte data[] = new byte[1024 * 4];
+
+                outputStream.write(req.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
             return 0;
         }
-        public Object recvResponse() {
-            return new String("a");
+
+        public String recvResponse() {
+            String ret = "";
+
+            if (mSocket == null) {
+                return null;
+            }
+
+            InputStream inputStream = null;
+            try {
+                inputStream = mSocket.getInputStream();
+                int i = 0;
+                byte data[] = new byte[1024 * 4];
+
+                while ((i = inputStream.read(data)) != 1) {
+                    ret += new String(data, 0, i);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return ret;
         }
+
         public String getIpAddr() {
             try {
                 java.net.InetAddress test = java.net.InetAddress.getByName("localhost");
@@ -111,6 +156,36 @@ public class GameServer extends Service {
                 e.printStackTrace();
             }
             return new String("NULL");
+        }
+
+        public void startSocketServer(String ipAddr) {
+            new ServerThread().start();
+        }
+
+        public void connSocketServer(String ipAddr) {
+            try {
+                mSocket = new Socket(ipAddr,8888);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //线程类
+    private class ServerThread extends Thread {
+        public void run() {
+            //声明一个ServerSocket对象
+            ServerSocket serverSocket = null;
+            try {
+                serverSocket = new ServerSocket(8888);
+                //调用 ServerSocket对象的accept()方法接收客户端所发送的请求
+                //accept()这个方法是一个阻塞的方法，如果客户端没有发送请求，那么代码运行到这里被阻塞，停在这里不再向下运行了，一直等待accept()函数的返回,这时候突然客户端发送一个请求，那个这个方法就会返回Socket对象，
+                //Socket对象代表服务器端和客户端之间的一个连接
+                mSocket = serverSocket.accept();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
