@@ -112,9 +112,6 @@ public class GameServer extends Service {
 
             try {
                 OutputStream outputStream = mSocket.getOutputStream();
-                int i = 0;
-                byte data[] = new byte[1024 * 4];
-
                 outputStream.write(req.getBytes());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -133,9 +130,9 @@ public class GameServer extends Service {
             InputStream inputStream = null;
             try {
                 inputStream = mSocket.getInputStream();
-                int i = 0;
                 byte data[] = new byte[1024 * 4];
 
+                int i = 0;
                 while ((i = inputStream.read(data)) != 1) {
                     ret += new String(data, 0, i);
                 }
@@ -169,18 +166,23 @@ public class GameServer extends Service {
                 e.printStackTrace();
             }
         }
+
     }
 
-    //线程类
+    public void closeSocketServer() {
+        try {
+            mSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class ServerThread extends Thread {
         public void run() {
             //声明一个ServerSocket对象
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(8888);
-                //调用 ServerSocket对象的accept()方法接收客户端所发送的请求
-                //accept()这个方法是一个阻塞的方法，如果客户端没有发送请求，那么代码运行到这里被阻塞，停在这里不再向下运行了，一直等待accept()函数的返回,这时候突然客户端发送一个请求，那个这个方法就会返回Socket对象，
-                //Socket对象代表服务器端和客户端之间的一个连接
                 mSocket = serverSocket.accept();
 
             } catch (IOException e) {
@@ -188,4 +190,12 @@ public class GameServer extends Service {
             }
         }
     }
+
+    class ServiceBinder extends Binder {
+        public GameServer getService() {
+            return GameServer.this;
+        }
+    }
 }
+
+

@@ -302,19 +302,6 @@ public class MainActivity extends Activity {
             }
         });
 
-        /*
-        final Button btn_vsmode = (Button) findViewById(R.id.btn_vsmode);
-        btn_vsmode.setEnabled(true);
-        btn_vsmode.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                mVsMode = (mVsMode == VS_MODE.COMVSHUM) ? VS_MODE.HUMVSHUM : VS_MODE.COMVSHUM;
-                String text = (mVsMode != VS_MODE.COMVSHUM) ? "Num VS Hum" : "Com VS HUM";
-                btn_vsmode.setText(text);
-
-                gameStart();
-            }
-        });
-        */
         gameStart();
 	}
 	

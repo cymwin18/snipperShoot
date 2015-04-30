@@ -116,9 +116,7 @@ class SnipperInfo {
 			}
 		}
 		
-		Log.i("Yangming", "here 0" + ret.toString());
 		if (MapInfo.battleMap[ret.getX()][ret.getY()].isShoot()) {
-			Log.i("Yangming", "here" + ret.toString());
 			ret = calcNextMove();
 		}
 		

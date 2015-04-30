@@ -1,8 +1,12 @@
 package com.example.test;
 
 import android.app.Activity;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -15,32 +19,28 @@ import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.example.test.MainActivity;
-import com.example.test.R;
-
-import java.net.UnknownHostException;
-
 /**
  * Created by cymwin18 on 4/22/15.
  */
 
 public class StartPage extends Activity {
-
+    private static final String TAG = "Yangming";
     public static String ipAddr_local = null;
-
     public static VS_MODE vsMode = VS_MODE.COMVSHUM;
 
     public static final String[] connMode = {"Create New Game","Connect to Game"};
+
+    private IGameServer mGameService;
+
+    enum GAME_TYPE {
+        SERVER,
+        CLIENT
+    }
 
     void sendVsMode(VS_MODE vsMode) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("VSMODE", vsMode == VS_MODE.HUMVSHUM ? 1 : 0);
         startActivity(intent);
-    }
-
-    enum GAME_TYPE {
-        SERVER,
-        CLIENT
     }
 
     GAME_TYPE mGameType = GAME_TYPE.SERVER;
@@ -54,6 +54,12 @@ public class StartPage extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.startpage);
 
+        Log.i(TAG, "Yangming onCreate");
+        // Bind to GameServer
+        Intent intent = new Intent(StartPage.this, GameServer.class);
+        bindService(intent, conn, Context.BIND_AUTO_CREATE);
+
+        // Button init.
         final RadioButton btnVsCom = (RadioButton) findViewById(R.id.vsCom_btn);
         final RadioButton btnVsHum = (RadioButton) findViewById(R.id.vsHum_btn);
 
@@ -132,14 +138,43 @@ public class StartPage extends Activity {
                 if (vsMode == VS_MODE.HUMVSHUM) {
                     if (mGameType == GAME_TYPE.SERVER) {
                         // TODO: Create the socket server.
+                        if (ipAddr_local != null) {
+                            mGameService.startSocketServer(ipAddr_local);
+                            Log.i(TAG, "Yangming create");
+                        }
                     } else {
                         // TODO: Join an exist server.
+                        if (ipAddr_local != null) {
+                            mGameService.connSocketServer(ipAddr_local);
+                        }
+                        Log.i(TAG, "Yangming connect");
                     }
                 }
                 sendVsMode(vsMode);
             }
         });
     }
+
+    private ServiceConnection conn = new ServiceConnection() {
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            // TODO Auto-generated method stub
+            mGameService = (IGameServer)service;
+            Log.i(TAG, "Yangming onServiceConnected");
+        }
+
+        public void onServiceDisconnected(ComponentName name) {
+            // TODO Auto-generated method stub
+            mGameService = null;
+            Log.i(TAG, "Yangming onServiceDisconnected");
+        }
+    };
+
+    protected void onDestory() {
+        super.onDestroy();
+        unbindService(conn);
+        Log.i(TAG, "Yangming onDestory");
+    }
 }
+
 
 
