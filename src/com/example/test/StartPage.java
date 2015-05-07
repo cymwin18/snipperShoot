@@ -111,6 +111,7 @@ public class StartPage extends Activity {
 
 
                     ipclient_tv.setVisibility(View.GONE);
+                    ipclient_Addr_et.setVisibility(View.GONE);
                 }
             }
 
