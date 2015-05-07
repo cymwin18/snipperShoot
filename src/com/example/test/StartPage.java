@@ -165,7 +165,6 @@ public class StartPage extends Activity {
         Button btnStart = (Button) findViewById(R.id.Start_btn);
         btnStart.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
-                Log.i("Yangming", "mode is " + vsMode);
                 if (vsMode == VS_MODE.HUMVSHUM) {
                     if (mGameType == GAME_TYPE.SERVER) {
                         // TODO: Create the socket server.
@@ -178,7 +177,6 @@ public class StartPage extends Activity {
                         if (ipAddr_local != null) {
                             mGameService.connSocketServer(ipAddr_local);
                         }
-                        Log.i(TAG, "Yangming connect");
                     }
                 }
                 sendVsMode(vsMode);
