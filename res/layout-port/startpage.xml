@@ -36,7 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="IP:"
+            android:text="SERVER IP:"
             android:id="@+id/ip_textview"
             android:layout_gravity="center_horizontal" />
         <EditText
@@ -44,6 +44,24 @@
             android:layout_height="wrap_content"
             android:inputType="date"
             android:id="@+id/ipAddr_et" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="CLIENT IP:"
+            android:id="@+id/ip_textview_client"
+            android:layout_gravity="center_horizontal" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="date"
+            android:id="@+id/ipAddr_et_clientip" />
     </LinearLayout>
 
     <Button

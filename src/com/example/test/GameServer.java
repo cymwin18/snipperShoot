@@ -166,7 +166,6 @@ public class GameServer extends Service {
                 e.printStackTrace();
             }
         }
-
     }
 
     public void closeSocketServer() {
